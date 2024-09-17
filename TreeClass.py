@@ -14,7 +14,7 @@ class Tree:
         self.rootNode = Node(np.array([rootX, rootY]))
         self.nodeList.append(self.rootNode)
         self.coordList.append(self.rootNode.coords)
-        self.goalCoords = (0,0)
+        self.goalNode = None
     
     def smallestDistanceSearch(self, compareNode, currentNode=None):
         if currentNode == None:

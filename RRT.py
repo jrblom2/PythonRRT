@@ -20,6 +20,15 @@ def circleListContainsPoint(circleList, point):
             containsPoint = True
     return containsPoint
 
+def circleListCollidesWithLine(circleList, line):
+    newPointCollides = False
+    for circle in circleList:
+        #get closest point on new line to circle
+        closestPoint = p(line[0], line[1], circle.center)
+        if circle.contains_point(closestPoint):
+            newPointCollides = True
+    return newPointCollides
+
 graphIterations = 500
 rootX = 50
 rootY = 50
@@ -52,7 +61,7 @@ while True:
     goalY = random.uniform(0, configY)
     containsGoal = circleListContainsPoint(circleList, (goalX, goalY))
     if not containsGoal:
-        tree.goalCoords = (goalX, goalY)
+        tree.goalNode = Ts.Node(np.array([goalX, goalY]))
         break
 
 steps = 0
@@ -82,20 +91,31 @@ while steps < graphIterations:
     newNode.parentLine = newLine
 
     #Check collision
-    newPointCollides = False
-    for circle in circleList:
-        #get closest point on new line to circle
-        closestPoint = p(newLine[0], newLine[1], circle.center)
-        if circle.contains_point(closestPoint):
-            newPointCollides = True
+    newPointCollides = circleListCollidesWithLine(circleList, newLine)
 
     if not newPointCollides:
         tree.nodeList.append(newNode)
         tree.coordList.append(newNode.coords)
         closestNode.children.append(newNode)
         closestNode.linesToChildren.append(newLine)
-        tree.edgeList.append([closestNode.coords, newNode.coords])
+        tree.edgeList.append(newLine)
         steps = steps + 1
+
+        #Check line of sight to goal
+        potentialGoalLine = [newNode.coords, tree.goalNode.coords]
+        goalLineCollides = circleListCollidesWithLine(circleList, potentialGoalLine)
+
+        if not goalLineCollides:
+            #line of sight found
+            tree.goalNode.parentNode = newNode
+            tree.goalNode.parentLine = potentialGoalLine
+
+            tree.nodeList.append(tree.goalNode)
+            tree.coordList.append(tree.goalNode.coords)
+            newNode.children.append(tree.goalNode)
+            newNode.linesToChildren.append(potentialGoalLine)
+            tree.edgeList.append(potentialGoalLine)
+            break
 
 #Matplotlib graph plotting
 fig, ax = plt.subplots()
