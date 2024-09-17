@@ -65,7 +65,26 @@ while True:
         break
 
 steps = 0
+lastNodeCreated = tree.rootNode
 while steps < graphIterations:
+    #Check for line of sight on goal to last node created, root by default
+    potentialGoalLine = [lastNodeCreated.coords, tree.goalNode.coords]
+    goalLineCollides = circleListCollidesWithLine(circleList, potentialGoalLine)
+
+    if not goalLineCollides:
+        #line of sight found
+        tree.goalNode.parentNode = lastNodeCreated
+        tree.goalNode.parentLine = potentialGoalLine
+
+        tree.nodeList.append(tree.goalNode)
+        tree.coordList.append(tree.goalNode.coords)
+        lastNodeCreated.children.append(tree.goalNode)
+        lastNodeCreated.linesToChildren.append(potentialGoalLine)
+        tree.edgeList.append(potentialGoalLine)
+        tree.goalFound = True
+        break
+
+    #If no line of sight, try to create a new random node
     randomX = random.uniform(0, configX)
     randomY = random.uniform(0, configY)
 
@@ -99,24 +118,8 @@ while steps < graphIterations:
         closestNode.children.append(newNode)
         closestNode.linesToChildren.append(newLine)
         tree.edgeList.append(newLine)
+        lastNodeCreated = newNode
         steps = steps + 1
-
-        #Check line of sight to goal
-        potentialGoalLine = [newNode.coords, tree.goalNode.coords]
-        goalLineCollides = circleListCollidesWithLine(circleList, potentialGoalLine)
-
-        if not goalLineCollides:
-            #line of sight found
-            tree.goalNode.parentNode = newNode
-            tree.goalNode.parentLine = potentialGoalLine
-
-            tree.nodeList.append(tree.goalNode)
-            tree.coordList.append(tree.goalNode.coords)
-            newNode.children.append(tree.goalNode)
-            newNode.linesToChildren.append(potentialGoalLine)
-            tree.edgeList.append(potentialGoalLine)
-            tree.goalFound = True
-            break
 
 #Matplotlib graph plotting
 goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
