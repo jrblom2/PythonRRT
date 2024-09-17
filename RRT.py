@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import LineCollection
+import imageio.v3 as iio
 
 ###[2]###
 def p(p1, p2, p3):
@@ -13,6 +14,7 @@ def p(p1, p2, p3):
     a = (dy*(y3-y1)+dx*(x3-x1))/det
     a = min(1, max(0, a))
     return x1+a*dx, y1+a*dy
+###[2]###
 
 def circleListContainsPoint(circleList, point):
     containsPoint = False
@@ -30,7 +32,33 @@ def circleListCollidesWithLine(circleList, line):
             newPointCollides = True
     return newPointCollides
 
-# random.seed(12)
+def collidesWith2DArray(image, line):
+    point1 = line[0]
+    point2 = line[1]
+    distance = np.linalg.norm(point1 - point2)
+    distanceReducer = 10
+    
+    stepSize = distance / distanceReducer
+
+    newX = ((point2[0] - point1[0]) / distance) * stepSize
+    newY = ((point2[1] - point1[1]) / distance) * stepSize 
+
+    collides = False
+    newPoint = point1
+    for i in range(distanceReducer):
+        newPoint = np.array([newX + newPoint[0], newY + newPoint[1]])
+        roundedX = round(newPoint[0])
+        roundedY = round(newPoint[1])
+        print(roundedX)
+        print(roundedY)
+        if image[roundedX][roundedY][0] != 0:
+            collides = True
+    print(collides)
+    return collides
+
+#Image setup
+im = iio.imread('N_map.png')
+
 graphIterations = 500
 maxChecks = 1000
 rootX = 50
@@ -39,15 +67,17 @@ configX = 100
 configY = 100
 
 #Circle setup
-numCircles = 25
+numCircles = 50
 circleMaxRadius = 10
 circleList = []
-for i in range(numCircles):
-    circleX = random.uniform(0, configX)
-    circleY = random.uniform(0, configY)
-    circleRadius = random.uniform(3, circleMaxRadius)
-    newCircle = patches.Circle((circleX, circleY), circleRadius, color='black')
-    circleList.append(newCircle)
+doCircles = True
+if doCircles:
+    for i in range(numCircles):
+        circleX = random.uniform(0, configX)
+        circleY = random.uniform(0, configY)
+        circleRadius = random.uniform(3, circleMaxRadius)
+        newCircle = patches.Circle((circleX, circleY), circleRadius, color='black')
+        circleList.append(newCircle)
 
 #Initial point setup
 while True:
@@ -74,6 +104,7 @@ while steps < graphIterations and totalChecks < maxChecks:
     #Check for line of sight on goal to last node created, root by default
     potentialGoalLine = [lastNodeCreated.coords, tree.goalNode.coords]
     goalLineCollides = circleListCollidesWithLine(circleList, potentialGoalLine)
+    # goalLineCollidesImage = collidesWith2DArray(im, potentialGoalLine)
 
     if not goalLineCollides:
         #line of sight found
@@ -114,9 +145,10 @@ while steps < graphIterations and totalChecks < maxChecks:
     newNode.parentLine = newLine
 
     #Check collision
-    newPointCollides = circleListCollidesWithLine(circleList, newLine)
+    newPointCollidesCircles = circleListCollidesWithLine(circleList, newLine)
+    # newPointCollidesImage = collidesWith2DArray(im, newLine)
 
-    if not newPointCollides:
+    if not newPointCollidesCircles:
         tree.nodeList.append(newNode)
         tree.coordList.append(newNode.coords)
         closestNode.children.append(newNode)
@@ -130,12 +162,19 @@ while steps < graphIterations and totalChecks < maxChecks:
 goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
 
 fig, ax = plt.subplots()
+
+#Plot circles if they exist
 for circle in circleList:
     ax.add_patch(circle)
+
+#Plot image, if it exists
+# plt.imshow(im, cmap='gray', origin='lower')
+
 lines = LineCollection(tree.edgeList)
 ax.add_collection(lines)
 ##[1]###
 plt.scatter(*zip(*tree.coordList), marker='.')
+###[1]###
 
 #goal route
 goalLines = LineCollection(goalEdges)
