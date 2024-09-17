@@ -115,15 +115,24 @@ while steps < graphIterations:
             newNode.children.append(tree.goalNode)
             newNode.linesToChildren.append(potentialGoalLine)
             tree.edgeList.append(potentialGoalLine)
+            tree.goalFound = True
             break
 
 #Matplotlib graph plotting
+goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
+
 fig, ax = plt.subplots()
 for circle in circleList:
     ax.add_patch(circle)
 lines = LineCollection(tree.edgeList)
 ax.add_collection(lines)
-###[1]###
+##[1]###
 plt.scatter(*zip(*tree.coordList), marker='.')
+
+#goal route
+goalLines = LineCollection(goalEdges)
+goalLines.set_color('red')
+ax.add_collection(goalLines)
+plt.scatter(*zip(*goalPoints), marker='.', color='red')
 plt.show()
 

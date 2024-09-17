@@ -8,6 +8,8 @@ class Tree:
 
     coordList = []
 
+    goalFound = False
+
     incrimentalDistance = 2
 
     def __init__(self, rootX, rootY):
@@ -27,6 +29,18 @@ class Tree:
                 bestFoundNode = bestofChildren
         
         return bestFoundNode
+    
+    def buildGoalPathEdgeandPointList(self):
+        edgeList = []
+        pointList = []
+
+        workingNode = self.goalNode
+        while workingNode.parentNode != None:
+            edgeList.append([workingNode.parentNode.coords, workingNode.coords])
+            pointList.append(workingNode.coords)
+            workingNode = workingNode.parentNode
+        return edgeList, pointList
+        
 
 class Node:
 
