@@ -8,14 +8,13 @@ class Tree:
 
     coordList = []
 
-    incrimentalDistance = 1
-    configX = 100
-    configY = 100
+    incrimentalDistance = 2
 
     def __init__(self, rootX, rootY):
         self.rootNode = Node(np.array([rootX, rootY]))
         self.nodeList.append(self.rootNode)
         self.coordList.append(self.rootNode.coords)
+        self.goalCoords = (0,0)
     
     def smallestDistanceSearch(self, compareNode, currentNode=None):
         if currentNode == None:
