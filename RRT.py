@@ -11,6 +11,7 @@ def p(p1, p2, p3):
     dx, dy = x2-x1, y2-y1
     det = dx*dx + dy*dy
     a = (dy*(y3-y1)+dx*(x3-x1))/det
+    a = min(1, max(0, a))
     return x1+a*dx, y1+a*dy
 
 def circleListContainsPoint(circleList, point):
@@ -29,14 +30,16 @@ def circleListCollidesWithLine(circleList, line):
             newPointCollides = True
     return newPointCollides
 
+# random.seed(12)
 graphIterations = 500
+maxChecks = 1000
 rootX = 50
 rootY = 50
 configX = 100
 configY = 100
 
 #Circle setup
-numCircles = 10
+numCircles = 25
 circleMaxRadius = 10
 circleList = []
 for i in range(numCircles):
@@ -65,8 +68,9 @@ while True:
         break
 
 steps = 0
+totalChecks = 0
 lastNodeCreated = tree.rootNode
-while steps < graphIterations:
+while steps < graphIterations and totalChecks < maxChecks:
     #Check for line of sight on goal to last node created, root by default
     potentialGoalLine = [lastNodeCreated.coords, tree.goalNode.coords]
     goalLineCollides = circleListCollidesWithLine(circleList, potentialGoalLine)
@@ -120,6 +124,7 @@ while steps < graphIterations:
         tree.edgeList.append(newLine)
         lastNodeCreated = newNode
         steps = steps + 1
+    totalChecks = totalChecks + 1
 
 #Matplotlib graph plotting
 goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
