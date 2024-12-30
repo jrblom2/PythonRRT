@@ -1,7 +1,8 @@
 import numpy as np
 
+
 class Tree:
-    
+
     edgeList = []
 
     nodeList = []
@@ -17,39 +18,43 @@ class Tree:
         self.nodeList.append(self.rootNode)
         self.coordList.append(self.rootNode.coords)
         self.goalNode = None
-    
+
     def smallestDistanceSearch(self, compareNode, currentNode=None):
         if currentNode == None:
             currentNode = self.rootNode
-        
+
         bestFoundNode = currentNode
         for node in currentNode.children:
             bestofChildren = self.smallestDistanceSearch(compareNode, node)
-            if bestofChildren.calcDistance(compareNode) < bestFoundNode.calcDistance(compareNode):
+            if bestofChildren.calcDistance(
+                compareNode
+            ) < bestFoundNode.calcDistance(compareNode):
                 bestFoundNode = bestofChildren
-        
+
         return bestFoundNode
-    
+
     def buildGoalPathEdgeandPointList(self):
         edgeList = []
         pointList = []
 
         workingNode = self.goalNode
-        while workingNode.parentNode != None:
-            edgeList.append([workingNode.parentNode.coords, workingNode.coords])
+        while workingNode.parentNode is not None:
+            edgeList.append(
+                [workingNode.parentNode.coords, workingNode.coords]
+            )
             pointList.append(workingNode.coords)
             workingNode = workingNode.parentNode
+        pointList.append(workingNode.coords)
         return edgeList, pointList
-        
+
 
 class Node:
 
-    #coords is a list of two floats indicating x-y coords
+    # coords is a list of two floats indicating x-y coords
     coords = np.array([])
 
     children = []
     linesToChildren = []
-
 
     def __init__(self, coords, parentNode=None, parentLine=None):
         self.coords = coords
@@ -59,6 +64,6 @@ class Node:
 
     def calcDistance(self, anotherNode):
         return np.linalg.norm(self.coords - anotherNode.coords)
-    
+
     def printNode(self):
         print("x: ", self.coords[0], " y: ", self.coords[1])
