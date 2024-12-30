@@ -2,6 +2,7 @@ import TreeClass as Ts
 from Sphere import Sphere
 import random
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from mpl_toolkits.mplot3d import Axes3D
@@ -47,8 +48,8 @@ configY = 100
 configZ = 100
 
 # Sphere setup
-numSpheres = 30
-sphereMaxRadius = 10
+numSpheres = 40
+sphereMaxRadius = 20
 sphereList = []
 doSpheres = True
 if doSpheres:
@@ -56,7 +57,7 @@ if doSpheres:
         sphereX = random.uniform(0, configX)
         sphereY = random.uniform(0, configY)
         sphereZ = random.uniform(0, configZ)
-        sphereRadius = random.uniform(3, sphereMaxRadius)
+        sphereRadius = random.uniform(8, sphereMaxRadius)
         newSphere = Sphere((sphereX, sphereY, sphereZ), sphereRadius)
         sphereList.append(newSphere)
 
@@ -83,7 +84,7 @@ while True:
 steps = 0
 totalChecks = 0
 lastNodeCreated = tree.rootNode
-while steps < graphIterations and totalChecks < maxChecks and False:
+while steps < graphIterations and totalChecks < maxChecks:
     # Check for line of sight on goal to last node created, root by default
     potentialGoalLine = [lastNodeCreated.coords, tree.goalNode.coords]
     goalLineCollides = sphereListCollidesWithLine(
@@ -106,8 +107,9 @@ while steps < graphIterations and totalChecks < maxChecks and False:
     # If no line of sight, try to create a new random node
     randomX = random.uniform(0, configX)
     randomY = random.uniform(0, configY)
+    randomZ = random.uniform(0, configZ)
 
-    randomNode = Ts.Node(np.array([randomX, randomY]))
+    randomNode = Ts.Node(np.array([randomX, randomY, randomZ]))
 
     # find closest node in tree to random node
     closestNode = tree.smallestDistanceSearch(randomNode)
@@ -116,6 +118,7 @@ while steps < graphIterations and totalChecks < maxChecks and False:
 
     closestNodeX = closestNode.coords[0]
     closestNodeY = closestNode.coords[1]
+    closestNodeZ = closestNode.coords[2]
 
     # normalize distance and add to existing coords
     newX = (
@@ -124,8 +127,15 @@ while steps < graphIterations and totalChecks < maxChecks and False:
     newY = (
         (randomNode.coords[1] - closestNodeY) / distance
     ) * tree.incrimentalDistance
+    newZ = (
+        (randomNode.coords[2] - closestNodeZ) / distance
+    ) * tree.incrimentalDistance
 
-    newNode = Ts.Node(np.array([newX + closestNodeX, newY + closestNodeY]))
+    newNode = Ts.Node(
+        np.array(
+            [newX + closestNodeX, newY + closestNodeY, newZ + closestNodeZ]
+        )
+    )
 
     # Housekeeping
     newLine = [closestNode.coords, newNode.coords]
@@ -148,7 +158,6 @@ while steps < graphIterations and totalChecks < maxChecks and False:
 
 # Matplotlib graph plotting
 goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
-
 fig = plt.figure()
 fig.patch.set_facecolor('#222222')  # Set background color to dark gray
 ax = fig.add_subplot(111, projection='3d')
@@ -176,7 +185,7 @@ goalLines = Line3DCollection(goalEdges)
 goalLines.set_color('red')
 ax.add_collection3d(goalLines)
 
-plt.scatter(*zip(*goalPoints), marker='.', color='red')
-plt.scatter(*goalPoints[0], marker='.', color='green', zorder=10)
-plt.scatter(*goalPoints[-1], marker='.', color='yellow', zorder=10)
+# plt.scatter(*zip(*goalPoints), marker='.', color='red')
+# plt.scatter(*tree.goalNode.coords, color='green')
+# plt.scatter(*tree.rootNode.coords, color='yellow')
 plt.show()
