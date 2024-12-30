@@ -13,14 +13,14 @@ class Tree:
 
     incrimentalDistance = 2
 
-    def __init__(self, rootX, rootY):
-        self.rootNode = Node(np.array([rootX, rootY]))
+    def __init__(self, rootX, rootY, rootZ):
+        self.rootNode = Node(np.array([rootX, rootY, rootZ]))
         self.nodeList.append(self.rootNode)
         self.coordList.append(self.rootNode.coords)
         self.goalNode = None
 
     def smallestDistanceSearch(self, compareNode, currentNode=None):
-        if currentNode == None:
+        if currentNode is None:
             currentNode = self.rootNode
 
         bestFoundNode = currentNode
@@ -50,7 +50,7 @@ class Tree:
 
 class Node:
 
-    # coords is a list of two floats indicating x-y coords
+    # coords is a list of two floats indicating x-y-z coords
     coords = np.array([])
 
     children = []
@@ -66,4 +66,11 @@ class Node:
         return np.linalg.norm(self.coords - anotherNode.coords)
 
     def printNode(self):
-        print("x: ", self.coords[0], " y: ", self.coords[1])
+        print(
+            "x: ",
+            self.coords[0],
+            " y: ",
+            self.coords[1],
+            " z: ",
+            self.coords[2],
+        )
