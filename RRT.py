@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 
-import pandas as pd
-import plotly.express as px
+import plotly
 import plotly.graph_objects as go
 
 
@@ -53,8 +52,8 @@ def doRRT():
     configZ = 100
 
     # Sphere setup
-    numSpheres = 40
-    sphereMaxRadius = 20
+    numSpheres = 30
+    sphereMaxRadius = 15
     sphereList = []
     doSpheres = True
     if doSpheres:
@@ -217,7 +216,7 @@ def plotWithPyPlot(tree, sphereList):
                 y=Y,
                 z=Z,
                 colorscale=[[0, 'orange'], [1, 'orange']],
-                showlegend=False,
+                showscale=False,
             )
         )
 
@@ -268,6 +267,9 @@ def plotWithPyPlot(tree, sphereList):
     )
 
     fig = go.Figure(data=data)
+
+    camera = dict(eye=dict(x=1.0, y=1.0, z=0.8))
+
     fig.update_layout(
         showlegend=False,
         scene=dict(
@@ -278,10 +280,11 @@ def plotWithPyPlot(tree, sphereList):
         autosize=False,
         width=1000,
         height=1000,
-        coloraxis_showscale=False,
         paper_bgcolor='white',
         plot_bgcolor='white',
+        margin=dict(l=0, r=0, t=0, b=0),
+        scene_camera=camera,
     )
-    fig.update_coloraxes(showscale=False)
-    fig.update_traces(showlegend=False)
+
+    plotly.io.renderers.default = "plotly_mimetype+notebook"
     fig.show()
