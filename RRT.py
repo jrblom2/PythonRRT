@@ -42,9 +42,9 @@ def sphereListCollidesWithLine(sphereList, line):
     return newPointCollides
 
 
-def doRRT():
+def doRRT(seed=None):
     graphIterations = 500
-    maxChecks = 1000
+    maxChecks = 10000
     rootX = 50
     rootY = 50
     configX = 100
@@ -52,16 +52,20 @@ def doRRT():
     configZ = 100
 
     # Sphere setup
-    numSpheres = 30
-    sphereMaxRadius = 15
+    numSpheres = 10
+    sphereMaxRadius = 50
     sphereList = []
     doSpheres = True
+    if seed is None:
+        seed = random.randint(0, 1000)
+        print('Seed: ', seed)
+    random.seed(seed)
     if doSpheres:
         for i in range(numSpheres):
             sphereX = random.uniform(0, configX)
             sphereY = random.uniform(0, configY)
             sphereZ = random.uniform(0, configZ)
-            sphereRadius = random.uniform(8, sphereMaxRadius)
+            sphereRadius = random.uniform(20, sphereMaxRadius)
             newSphere = Sphere((sphereX, sphereY, sphereZ), sphereRadius)
             sphereList.append(newSphere)
 
@@ -208,6 +212,11 @@ def plotWithPyPlot(tree, sphereList):
     goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
 
     data = []
+    contours = go.surface.Contours(
+        x=go.surface.contours.X(highlight=False),
+        y=go.surface.contours.Y(highlight=False),
+        z=go.surface.contours.Z(highlight=False),
+    )
     for sphere in sphereList:
         X, Y, Z = sphere.plotMeshPyPlot()
         data.append(
@@ -217,6 +226,8 @@ def plotWithPyPlot(tree, sphereList):
                 z=Z,
                 colorscale=[[0, 'orange'], [1, 'orange']],
                 showscale=False,
+                hoverinfo='skip',
+                contours=contours,
             )
         )
 
@@ -227,7 +238,14 @@ def plotWithPyPlot(tree, sphereList):
         y = [point1[1], point2[1]]
         z = [point1[2], point2[2]]
         data.append(
-            go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color='blue'))
+            go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode='lines',
+                line=dict(color='blue'),
+                hoverinfo='skip',
+            )
         )
 
     for edge in goalEdges:
@@ -237,7 +255,14 @@ def plotWithPyPlot(tree, sphereList):
         y = [point1[1], point2[1]]
         z = [point1[2], point2[2]]
         data.append(
-            go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color='red'))
+            go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode='lines',
+                line=dict(color='red'),
+                hoverinfo='skip',
+            )
         )
 
     x = tree.goalNode.coords[0]
@@ -249,7 +274,11 @@ def plotWithPyPlot(tree, sphereList):
             y=[y],
             z=[z],
             mode='markers',
-            marker=dict(size=2, color='green'),  # Set the desired color
+            marker=dict(
+                size=4,
+                color='green',
+            ),  # Set the desired color
+            hoverinfo='skip',
         )
     )
 
@@ -262,7 +291,8 @@ def plotWithPyPlot(tree, sphereList):
             y=[y],
             z=[z],
             mode='markers',
-            marker=dict(size=2, color='yellow'),  # Set the desired color
+            marker=dict(size=4, color='yellow'),  # Set the desired color
+            hoverinfo='skip',
         )
     )
 
@@ -273,9 +303,24 @@ def plotWithPyPlot(tree, sphereList):
     fig.update_layout(
         showlegend=False,
         scene=dict(
-            xaxis=dict(showgrid=False, showticklabels=False, visible=False),
-            yaxis=dict(showgrid=False, showticklabels=False, visible=False),
-            zaxis=dict(showgrid=False, showticklabels=False, visible=False),
+            xaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                visible=False,
+                showspikes=False,
+            ),
+            yaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                visible=False,
+                showspikes=False,
+            ),
+            zaxis=dict(
+                showgrid=False,
+                showticklabels=False,
+                visible=False,
+                showspikes=False,
+            ),
         ),
         autosize=False,
         width=1000,
@@ -284,6 +329,7 @@ def plotWithPyPlot(tree, sphereList):
         plot_bgcolor='white',
         margin=dict(l=0, r=0, t=0, b=0),
         scene_camera=camera,
+        hovermode=False,
     )
 
     plotly.io.renderers.default = "plotly_mimetype+notebook"

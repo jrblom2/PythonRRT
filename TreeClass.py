@@ -11,7 +11,7 @@ class Tree:
 
     goalFound = False
 
-    incrimentalDistance = 2
+    incrimentalDistance = 7
 
     def __init__(self, rootX, rootY, rootZ):
         self.rootNode = Node(np.array([rootX, rootY, rootZ]))
