@@ -205,7 +205,7 @@ def plotWithMatPlot(tree, sphereList):
     plt.show()
 
 
-def plotWithPyPlot(tree, sphereList):
+def plotWithPyPlot(tree, sphereList, inputColor):
     goalEdges, goalPoints = tree.buildGoalPathEdgeandPointList()
 
     data = []
@@ -221,7 +221,7 @@ def plotWithPyPlot(tree, sphereList):
                 x=X,
                 y=Y,
                 z=Z,
-                colorscale=[[0, 'gray'], [1, 'gray']],
+                colorscale=[[0, inputColor], [1, inputColor]],
                 showscale=False,
                 hoverinfo='skip',
                 contours=contours,
@@ -243,7 +243,7 @@ def plotWithPyPlot(tree, sphereList):
                 line=dict(color='blue'),
                 hoverinfo='skip',
             )
-        )https://compucademy.net/exploring-shapes-with-python-sphere/
+        )
 
     for edge in goalEdges:
         point1 = edge[0]
@@ -320,8 +320,8 @@ def plotWithPyPlot(tree, sphereList):
             ),
         ),
         autosize=False,
-        width=1000,
-        height=1000,
+        width=600,
+        height=600,
         paper_bgcolor='white',
         plot_bgcolor='white',
         margin=dict(l=0, r=0, t=0, b=0),
