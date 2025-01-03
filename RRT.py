@@ -224,7 +224,7 @@ def plotWithPyPlot(tree, sphereList):
                 x=X,
                 y=Y,
                 z=Z,
-                colorscale=[[0, 'orange'], [1, 'orange']],
+                colorscale=[[0, 'gray'], [1, 'gray']],
                 showscale=False,
                 hoverinfo='skip',
                 contours=contours,
