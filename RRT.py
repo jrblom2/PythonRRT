@@ -202,9 +202,6 @@ def plotWithMatPlot(tree, sphereList):
     goalLines.set_color('red')
     ax.add_collection3d(goalLines)
 
-    # plt.scatter(*zip(*goalPoints), marker='.', color='red')
-    # plt.scatter(*tree.goalNode.coords, color='green')
-    # plt.scatter(*tree.rootNode.coords, color='yellow')
     plt.show()
 
 
@@ -246,7 +243,7 @@ def plotWithPyPlot(tree, sphereList):
                 line=dict(color='blue'),
                 hoverinfo='skip',
             )
-        )
+        )https://compucademy.net/exploring-shapes-with-python-sphere/
 
     for edge in goalEdges:
         point1 = edge[0]

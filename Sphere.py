@@ -16,6 +16,7 @@ class Sphere:
         z = (point[2] - self.center[2]) ** 2
         return (x + y + z) < self.radius**2
 
+    # [3]#
     def plotMeshMatPlot(self, axis):
         phi, theta = np.meshgrid(self.phi, self.theta)
         x = self.center[0] + self.radius * np.sin(phi) * np.cos(theta)
@@ -23,7 +24,9 @@ class Sphere:
         z = self.center[2] + self.radius * np.cos(phi)
         axis.plot_surface(x, y, z, color='#FF5733', alpha=0.8)  # Orange color
 
-    def plotMeshPyPlot(self, resolution=20):
+    # [3]#
+
+    def plotMeshPyPlot(self):
 
         x = self.center[0] + self.radius * np.outer(
             np.cos(self.theta), np.sin(self.phi)
